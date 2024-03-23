@@ -41,5 +41,8 @@
 </template>
 
 <style scoped>
-
+  .errorMessage,
+  .error {
+    color: var(--error-text);
+  }
 </style>
