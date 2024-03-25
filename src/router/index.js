@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHashHistory } from 'vue-router'
+
 import HomeView from '../views/HomeView.vue'
 import RegisterView from "@/views/RegisterView.vue";
 import UploadView from "@/views/UploadView.vue";
@@ -8,7 +9,7 @@ import EditFileView from "@/views/EditFileView.vue";
 import EditFileRightsView from "@/views/EditFileRightsView.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',

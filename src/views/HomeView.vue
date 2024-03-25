@@ -16,7 +16,7 @@
       uploadedFiles.value = await getFiles()
     }
     catch (e) {
-      console.log(e)
+      console.error(e)
     }
     finally {
       isLoading.value = false
@@ -33,28 +33,34 @@
     await handleGetFiles()
   }
 
-  const handleEditFileRights = async (fileId, fileName) =>
-      router.push({name: 'rights', params: {id: fileId, name: fileName}})
+  const handleEditFileRights = async (fileId) =>
+      router.push({name: 'rights', params: {id: fileId }})
 
-  const handleEditFileName = async (fileId, fileName) =>
-      router.push({name: 'edit', params: {id: fileId, name: fileName}})
+  const handleEditFileName = async (fileId) =>
+      router.push({name: 'edit', params: {id: fileId }})
 </script>
 
 <template>
   <main>
-    <h1>Ваши файлы</h1>
+    <p v-if="isLoading">Загрузка...</p>
 
-    <section>
-      <p v-if="isLoading">Загрузка...</p>
-      <ul class="list" v-if="uploadedFiles.length">
-        <li v-for="file in uploadedFiles">
-          <h4>Имя: {{ file.name }}</h4>
-          <Button @click="handleDownloadFile(file)">Скачать</Button>
-          <Button @click="handleEditFileRights(file.file_id, file.name)">Редактировать права</Button>
-          <Button @click="handleEditFileName(file.file_id, file.name)">Переименовать</Button>
-          <Button @click="handleDeleteFile(file.file_id)">Удалить</Button>
-        </li>
-      </ul>
-    </section>
+    <template v-else-if="uploadedFiles.length">
+      <h1>Ваши файлы</h1>
+
+      <section>
+        <ul class="list">
+          <li v-for="file in uploadedFiles">
+            <h4>Имя: {{ file.name }}</h4>
+
+            <Button @click="handleDownloadFile(file)">Скачать</Button>
+            <Button @click="handleEditFileRights(file.file_id, file.name)">Редактировать права</Button>
+            <Button @click="handleEditFileName(file.file_id, file.name)">Переименовать</Button>
+            <Button @click="handleDeleteFile(file.file_id)">Удалить</Button>
+          </li>
+        </ul>
+      </section>
+    </template>
+
+    <h2 v-else>У вас нет файлов</h2>
   </main>
 </template>
