@@ -28,6 +28,7 @@
 
     display: flex;
     gap: 12px;
+    align-items: center;
     flex-direction: column;
   }
 </style>

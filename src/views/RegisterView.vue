@@ -1,5 +1,5 @@
 <script setup>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 
 import Form from "@/components/Form.vue";
 import FormItem from "@/components/FormItem.vue";
@@ -15,14 +15,20 @@ const inputData = reactive({
   last_name: ''
 })
 
+const isLoading = ref(false)
+
 const errors = reactive({
   data: {},
   message: ''
 })
 
 const onSubmit = async () => {
+  isLoading.value = true
+
   errors.data = {}
   const data = await registration(inputData.email, inputData.password, inputData.first_name, inputData.last_name)
+
+  isLoading.value = false
 
   console.log(data)
 
@@ -51,46 +57,50 @@ const onInputChange = (field, event) => {
   <main>
     <h1>Регистрация</h1>
 
+
     <Form :submit="onSubmit" method="POST">
-      <FormItem
-        id="email"
-        label="Введите почту"
-        placeholder="Введите почту"
-        type="email"
-        :value="inputData.email"
-        :error-messages="errors.data?.email"
-        @change="(event) => onInputChange('email', event)"
-      />
+      <p v-if="isLoading">Загрузка...</p>
+      <template v-else>
+        <FormItem
+            id="email"
+            label="Введите почту"
+            placeholder="Введите почту"
+            type="email"
+            :value="inputData.email"
+            :error-messages="errors.data?.email"
+            @change="(event) => onInputChange('email', event)"
+        />
 
-      <FormItem
-          id="password"
-          label="Введите пароль"
-          placeholder="Введите пароль"
-          type="password"
-          :value="inputData.password"
-          :error-messages="errors.data?.password"
-          @change="(event) => onInputChange('password', event)"
-      />
+        <FormItem
+            id="password"
+            label="Введите пароль"
+            placeholder="Введите пароль"
+            type="password"
+            :value="inputData.password"
+            :error-messages="errors.data?.password"
+            @change="(event) => onInputChange('password', event)"
+        />
 
-      <FormItem
-          id="firstname"
-          label="Введите имя"
-          placeholder="Введите имя"
-          :value="inputData.first_name"
-          :error-messages="errors.data?.first_name"
-          @change="(event) => onInputChange('first_name', event)"
-      />
+        <FormItem
+            id="firstname"
+            label="Введите имя"
+            placeholder="Введите имя"
+            :value="inputData.first_name"
+            :error-messages="errors.data?.first_name"
+            @change="(event) => onInputChange('first_name', event)"
+        />
 
-      <FormItem
-          id="lastname"
-          label="Введите фамилию"
-          placeholder="Введите фамилию"
-          :value="inputData.last_name"
-          :error-messages="errors.data?.last_name"
-          @change="(event) => onInputChange('last_name', event)"
-      />
+        <FormItem
+            id="lastname"
+            label="Введите фамилию"
+            placeholder="Введите фамилию"
+            :value="inputData.last_name"
+            :error-messages="errors.data?.last_name"
+            @change="(event) => onInputChange('last_name', event)"
+        />
 
-      <Button @submit.prevent="onSubmit" type="submit">Зарегистрироваться</Button>
+        <Button @submit.prevent="onSubmit" type="submit">Зарегистрироваться</Button>
+      </template>
     </Form>
   </main>
 </template>
