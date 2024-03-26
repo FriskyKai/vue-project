@@ -64,3 +64,30 @@
     <h2 v-else>У вас нет файлов</h2>
   </main>
 </template>
+
+<style scoped>
+  .list {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .list > li {
+    flex-basis: 30%;
+    list-style-type: none;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 30px;
+  }
+
+  .list > li div {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  main {
+    margin-bottom: 100px;
+  }
+</style>

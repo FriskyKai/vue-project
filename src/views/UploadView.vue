@@ -51,7 +51,12 @@ const onSubmit = async (event) => {
       <ul class="list" v-if="uploadedFiles.length">
         <li v-for="file in uploadedFiles">
           <h4>Имя: {{ file.name }}</h4>
-          <p>Статус: {{ file.success ? 'загружен' : 'ошибка' }}</p>
+          <p>
+            Статус:
+            <span :class="[{ error: !file.success, success: file.success }]">
+              {{ file.success ? 'загружен' : 'ошибка' }}
+            </span>
+          </p>
           <Button v-if="file.success" @click="handleDownloadFile(file)">Скачать</Button>
         </li>
       </ul>
@@ -60,10 +65,33 @@ const onSubmit = async (event) => {
 </template>
 
 <style scoped>
+  .error {
+    color: var(--error-text);
+  }
+
+  .success {
+    color: var(--color-pink);
+  }
+
   .list {
     margin-top: 30px;
+
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .list > li {
+    flex-basis: 30%;
+
+    list-style-type: none;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 30px;
+
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
   }
 </style>

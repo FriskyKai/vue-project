@@ -21,6 +21,9 @@
     <ul class="list">
       <template v-if="token">
         <li class="item">
+          <Button @click="router.back()">Назад</Button>
+        </li>
+        <li class="item">
           <router-link to="/">Список загруженных файлов</router-link>
         </li>
         <li class="item">

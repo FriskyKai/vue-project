@@ -3,12 +3,12 @@ import {onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 
 import {editFileRights} from "@/api/methods/files/editFileRights.js";
+import {getFiles} from "@/api/methods/files/getFiles.js";
+import {deleteRight} from "@/api/methods/files/rights/deleteRight.js";
 
 import Form from "@/components/Form.vue";
 import FormItem from "@/components/FormItem.vue";
 import Button from "@/components/Button.vue";
-import {getFiles} from "@/api/methods/files/getFiles.js";
-
 
 const data = reactive({
   fileId: '',
@@ -18,6 +18,7 @@ const data = reactive({
   errorMessage: '',
   errorMessages: [],
   data: [],
+  deleteMessage: ''
 })
 
 onMounted(() => {
@@ -28,7 +29,22 @@ onMounted(() => {
 
 const handleInputChange = (e) => data.email = e.target.value
 
-const handleChangeFileName = async () => {
+const handleGetAccesses = async () => {
+  data.isLoading = true
+
+  try {
+    data.data = (await getFiles()).filter(file => file.file_id === data.fileId)?.[0].accesses.filter(user => user.type === 'co-author')
+    console.log(data.data)
+  }
+  catch (e) {
+    console.error(e)
+  }
+  finally {
+    data.isLoading = false
+  }
+}
+
+const handleAddFileRight = async () => {
   data.successMessage = ''
   data.errorMessages = []
   data.errorMessage = ''
@@ -48,21 +64,7 @@ const handleChangeFileName = async () => {
     }
 
     data.successMessage = 'Успех'
-  }
-  catch (e) {
-    console.error(e)
-  }
-  finally {
-    data.isLoading = false
-  }
-}
-
-const handleGetAccesses = async () => {
-  data.isLoading = true
-
-  try {
-    data.data = (await getFiles()).filter(file => file.file_id === data.fileId)?.[0].accesses.filter(user => user.type === 'co-author')
-    console.log(data.data)
+    data.data = response.filter(user => user.type !== 'author')
   }
   catch (e) {
     console.error(e)
@@ -73,6 +75,26 @@ const handleGetAccesses = async () => {
 }
 
 onMounted(async () => await handleGetAccesses())
+
+const handleDeleteRight = async (fileId, email) => {
+  data.deleteMessage = 'Удаляю...'
+
+  try {
+    const response = await deleteRight(fileId, email)
+    data.data = response.filter(user => user.type !== 'author')
+  }
+  catch (e) {
+    data.deleteMessage = 'Ошибка удаления'
+    console.log(e)
+  }
+  finally {
+    setTimeout(() => {
+      data.deleteMessage = ''
+    }, 2000)
+  }
+
+}
+
 </script>
 
 <template>
@@ -83,7 +105,7 @@ onMounted(async () => await handleGetAccesses())
     <p v-else-if="data.errorMessage">Ошибка: {{ data.errorMessage }} </p>
     <p v-else-if="data.successMessage"> {{ data.successMessage }} </p>
 
-    <Form method="POST" :submit="handleChangeFileName">
+    <Form method="POST" :submit="handleAddFileRight">
       <FormItem
           @change="handleInputChange"
           label="Новый пользователь"
@@ -96,5 +118,23 @@ onMounted(async () => await handleGetAccesses())
 
       <Button type="submit">Добавить</Button>
     </Form>
+
+    <h4 v-if="data.data.length && data.deleteMessage">{{ data.deleteMessage }}</h4>
+    <ul v-if="data.data.length">
+      <li v-for="user in data.data">
+        Почта: {{ user.email }}
+
+        <div>
+          <Button @click="handleDeleteRight(data.fileId, user.email)">Удалить права</Button>
+        </div>
+      </li>
+    </ul>
+    <h3 v-else>Права есть только у вас</h3>
   </main>
 </template>
+
+<style scoped>
+  ul {
+    margin-top: 30px;
+  }
+</style>
